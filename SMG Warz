@@ -1,0 +1,28 @@
+#####################################################################
+#SMG WARZ Game Mode                                                 #
+#by BOYuXRAY                                                        #
+#version 1                                                          #
+#inspired by Kuma`s scrip                                           #
+#####################################################################
+ 
+from pyspades.constants import *
+ 
+SMG_ONLY = "You cannot kill with Rifle or Shotgun. Use the SMG!"
+ 
+def apply_script(protocol, connection, config): #Error here
+ 
+    class SMGwarConnection(connection): #Error here
+        def spawn(self):#Error here
+            self.weapon = SMG_WEAPON
+            return connection.spawn(self)
+ 
+        def on_weapon_set(self, weapon): #Error here
+            if weapon in [RIFLE_WEAPON, SHOTGUN_WEAPON]:
+                self.send_chat(SMG_ONLY)
+                self.set_weapon(SMG_WEAPON)
+            return False
+ 
+    class SMGwarProtocol(protocol):
+        game_mode = CTF_MODE #Error here
+
+    return SMGwarProtocol, SMGwarConnection
