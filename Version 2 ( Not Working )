@@ -1,0 +1,45 @@
+#SMG WARZ Game Mode
+#by BOYuXRAY
+#version 3
+#inspired by Kuma`s script
+#added some features
+ 
+from pyspades.constants import *
+from commands import add, alias, admin, name, move
+from twisted.internet.task import LoopingCall
+ 
+SMG_ONLY = "You cannot kill with Rifle or Shotgun. Use the SMG!"
+
+@alias ('fly')
+def fly(connection)
+    protocol = connection.protocol
+        if connection in protocol.players:
+            player = connection
+            player.fly = not player.fly
+            message = 'now flying like a bird' if player.fly else 'no longer flying like a bird'
+            player.send_chat("You're {0}".format(message))
+
+def smghelp(connection):
+    protocol = connection.protocol
+    help = ["-" * 50,"Some of the commands are: /fly,/smghelp","anyone cant use rifle and shotgun,use SMG","Good luck!"
+    if connection in protocol.players:
+        for line in help:
+            connection.send_chat(line)
+
+ 
+def apply_script(protocol, connection, config):
+    class SMGwarConnection(connection): 
+        def spawn(self):
+            self.weapon = SMG_WEAPON
+            return connection.spawn(self)
+ 
+        def on_weapon_set(self, weapon):
+            if weapon in [RIFLE_WEAPON, SHOTGUN_WEAPON]:
+                self.send_chat(SMG_ONLY)
+                self.set_weapon(SMG_WEAPON)
+            return False
+ 
+    class SMGwarProtocol(protocol):
+        game_mode = CTF_MODE
+
+    return SMGwarProtocol, SMGwarConnection
